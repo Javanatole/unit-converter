@@ -16,94 +16,52 @@ func InitHttpRoutes() {
 	// Parse templates
 	tmpl := template.Must(template.ParseFiles("static/result.html"))
 
-	// handle convert distance
-	http.HandleFunc("/convert-distance", func(w http.ResponseWriter, r *http.Request) {
+	// handle all type of conversion
+	http.HandleFunc("/convert", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 			return
 		}
 
 		// Parse form values
-		length, err := strconv.ParseFloat(r.FormValue("length"), 64)
+		value, err := strconv.ParseFloat(r.FormValue("value"), 64)
 		if err != nil {
-			http.Error(w, "Invalid length value", http.StatusBadRequest)
+			http.Error(w, "Invalid value", http.StatusBadRequest)
 			return
 		}
 		// get unit from and to
 		unitFrom := r.FormValue("unit_from")
 		unitTo := r.FormValue("unit_to")
 
-		distance, err := ConvertDistance(length, unitFrom, unitTo)
+		// check if unit from or to are missing
+		if unitFrom == "" || unitTo == "" {
+			http.Error(w, "Missing unit", http.StatusBadRequest)
+			return
+		}
 
-		if err != nil {
-			http.Error(w, "Can't convert in another unit", http.StatusBadRequest)
+		convertedValue := 0.0
+		var conversionError error
+
+		convertType := r.URL.Query().Get("type")
+
+		switch convertType {
+		case "distance":
+			convertedValue, conversionError = ConvertDistance(value, unitFrom, unitTo)
+		case "weight":
+			convertedValue, conversionError = ConvertWeight(value, unitFrom, unitTo)
+		case "temperature":
+			convertedValue, conversionError = ConvertTemperature(value, unitFrom, unitTo)
+		default:
+			http.Error(w, "Invalid type", http.StatusBadRequest)
+		}
+
+		if conversionError != nil {
+			http.Error(w, "Invalid unit", http.StatusBadRequest)
+			return
 		}
 
 		err = tmpl.ExecuteTemplate(w, "result.html", ResultData{
-			ConvertedValue: distance,
-			ConvertedUnit:  unitTo,
-		})
-		if err != nil {
-			panic(err)
-		}
-	})
-
-	// handle convert weight
-	http.HandleFunc("/convert-weight", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-			return
-		}
-
-		// Parse form values
-		weight, err := strconv.ParseFloat(r.FormValue("weight"), 64)
-		if err != nil {
-			http.Error(w, "Invalid weight value", http.StatusBadRequest)
-			return
-		}
-		unitFrom := r.FormValue("unit_from")
-		unitTo := r.FormValue("unit_to")
-
-		convertedWeight := ConvertWeight(weight, unitFrom, unitTo)
-
-		if err != nil {
-			http.Error(w, "Can't convert in another unit", http.StatusBadRequest)
-		}
-
-		err = tmpl.ExecuteTemplate(w, "result.html", ResultData{
-			ConvertedValue: convertedWeight,
-			ConvertedUnit:  unitTo,
-		})
-
-		if err != nil {
-			panic(err)
-		}
-	})
-
-	// handle convert weight
-	http.HandleFunc("/convert-temperature", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-			return
-		}
-
-		// Parse form values
-		temperature, err := strconv.ParseFloat(r.FormValue("temperature"), 64)
-		if err != nil {
-			http.Error(w, "Invalid weight value", http.StatusBadRequest)
-			return
-		}
-		unitFrom := r.FormValue("unit_from")
-		unitTo := r.FormValue("unit_to")
-
-		convertedTemperature := ConvertTemperature(temperature, unitFrom, unitTo)
-
-		if err != nil {
-			http.Error(w, "Can't convert in another unit", http.StatusBadRequest)
-		}
-
-		err = tmpl.ExecuteTemplate(w, "result.html", ResultData{
-			ConvertedValue: convertedTemperature,
+			ConvertedValue: convertedValue,
 			ConvertedUnit:  unitTo,
 		})
 

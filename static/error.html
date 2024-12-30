@@ -1,9 +1,9 @@
 <html lang="fr">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Unit converter</title>
-</head>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Unit converter</title>
+    </head>
     <body>
         <h1 style="color: #006300">Unit converter</h1>
         <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-around;">
@@ -24,11 +24,8 @@
             </a>
         </div>
         <div style="margin-top: 24px; display: flex; flex-direction: column; align-items: center">
-            <h3 style="color: green">
-                Result of your computation
-            </h3>
             <h2 style="color: green">
-                {{.ConvertedValue}} {{.ConvertedUnit}}
+                {{.Error}}
             </h2>
         </div>
     </body>

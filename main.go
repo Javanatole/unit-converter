@@ -17,7 +17,7 @@ func main() {
 	server.InitHttpRoutes()
 
 	// show ready to server and start server
-	fmt.Println("Ready to serve unit converter")
+	fmt.Println("Ready to serve unit converter on port 8080")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		panic("Error while serving unit converter")

@@ -1,0 +1,52 @@
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unit converter</title>
+</head>
+<body>
+    <h1 style="color: #006300">Unit converter</h1>
+    <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-around;">
+        <a href="/" style="text-decoration: none;">
+            <div style="background: rgba(76,175,80,0.64); color: white; padding: 24px; text-align: center; border-radius: 5px; cursor: pointer;">
+                Length converter
+            </div>
+        </a>
+        <a href="weight.html" style="text-decoration: none;">
+            <div style="background: #4CAF50; color: white; padding: 24px; text-align: center; border-radius: 5px; cursor: pointer;">
+                Weight converter
+            </div>
+        </a>
+        <a href="temperature.html" style="text-decoration: none;">
+            <div style="background: rgba(76,175,80,0.64); color: white; padding: 24px; text-align: center; border-radius: 5px; cursor: pointer;">
+                Temperature converter
+            </div>
+        </a>
+    </div>
+    <form action="/convert-weight" method="POST" style="padding-top: 26px;">
+        <div style="display: flex; flex-direction: column;">
+            <label for="weight" style="font-size: 20px">Weight to convert</label>
+            <input id="weight" name="weight" style="padding: 8px;margin: 10px;font-size: 16px" />
+        </div>
+        <div style="display: flex; flex-direction: column;padding-top: 10px;">
+            <label for="unit_from" style="font-size: 20px">Unit from</label>
+            <select name="unit_from" id="unit_from" style="padding: 8px; margin: 10px; font-size: 16px;">
+                <option value="">-- Please choose a unit to convert from --</option>
+                <option value="kilogram">Kilogram</option>
+                <option value="gram">Gram</option>
+                <option value="pound">Pound</option>
+            </select>
+        </div>
+        <div style="display: flex; flex-direction: column;padding-top: 10px;">
+            <label for="unit_to" style="font-size: 20px">Unit to</label>
+            <select name="unit_to" id="unit_to" style="padding: 8px; margin: 10px; font-size: 16px;">
+                <option value="">-- Please choose a unit to convert from --</option>
+                <option value="kilogram">Kilogram</option>
+                <option value="gram">Gram</option>
+                <option value="pound">Pound</option>
+            </select>
+        </div>
+        <input type="submit" value="Convert" style="margin: 10px; padding: 16px; border-radius: 5px; font-size: 16px" />
+    </form>
+</body>
+</html>

@@ -1,11 +1,9 @@
 package server
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 // ResultData represents the structure of the API response
@@ -14,23 +12,9 @@ type ResultData struct {
 	ConvertedUnit  string  `json:"converted_unit"`
 }
 
-// ResultError represents the structure of the API response
-type ResultError struct {
-	Error string `json:"error"`
-}
-
-func ExecuteErrorTemplate(tmpl *template.Template, w http.ResponseWriter, error string) {
-	err := tmpl.ExecuteTemplate(w, "error.html", ResultError{
-		Error: error,
-	})
-	if err != nil {
-		panic(err)
-	}
-}
-
 func InitHttpRoutes() {
 	// Parse templates
-	tmpl := template.Must(template.ParseFiles("static/result.html", "static/error.html"))
+	tmpl := template.Must(template.ParseFiles("static/result.html"))
 
 	// handle all type of conversion
 	http.HandleFunc("/convert", func(w http.ResponseWriter, r *http.Request) {
@@ -49,39 +33,38 @@ func InitHttpRoutes() {
 		unitFrom := r.FormValue("unit_from")
 		unitTo := r.FormValue("unit_to")
 
-		convertType := r.URL.Query().Get("type")
+		// check if unit from or to are missing
+		if unitFrom == "" || unitTo == "" {
+			http.Error(w, "Missing unit", http.StatusBadRequest)
+			return
+		}
 
 		convertedValue := 0.0
 		var conversionError error
+
+		convertType := r.URL.Query().Get("type")
 
 		switch convertType {
 		case "distance":
 			convertedValue, conversionError = ConvertDistance(value, unitFrom, unitTo)
 		case "weight":
-			convertedValue = ConvertWeight(value, unitFrom, unitTo)
+			convertedValue, conversionError = ConvertWeight(value, unitFrom, unitTo)
 		case "temperature":
-			convertedValue = ConvertTemperature(value, unitFrom, unitTo)
+			convertedValue, conversionError = ConvertTemperature(value, unitFrom, unitTo)
+		default:
+			http.Error(w, "Invalid type", http.StatusBadRequest)
 		}
 
 		if conversionError != nil {
-			missing := []string{}
-			if unitFrom == "" {
-				missing = append(missing, "« unit from »")
-			}
-			if unitTo == "" {
-				missing = append(missing, "« unit to »")
-			}
-			if len(missing) > 0 {
-				missing := "We need: " + strings.Join(missing, " and ") + " for computing the result"
-				ExecuteErrorTemplate(tmpl, w, fmt.Sprintf(missing))
-				return
-			}
+			http.Error(w, "Invalid unit", http.StatusBadRequest)
+			return
 		}
 
 		err = tmpl.ExecuteTemplate(w, "result.html", ResultData{
 			ConvertedValue: convertedValue,
 			ConvertedUnit:  unitTo,
 		})
+
 		if err != nil {
 			panic(err)
 		}

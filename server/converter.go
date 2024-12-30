@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// ConvertDistance convert distance from a unit to another unit
 func ConvertDistance(distance float64, unitFrom string, unitTo string) (float64, error) {
 	conversionFactors := map[string]float64{
 		"meter":      1,
@@ -22,6 +23,7 @@ func ConvertDistance(distance float64, unitFrom string, unitTo string) (float64,
 	return (distance / fromFactor) * toFactor, nil
 }
 
+// ConvertWeight convert weight from a unit to another unit
 func ConvertWeight(weight float64, unitFrom string, unitTo string) float64 {
 	conversionFactors := map[string]float64{
 		"kilogram": 1,
@@ -43,6 +45,7 @@ func ConvertWeight(weight float64, unitFrom string, unitTo string) float64 {
 	return (weight / fromFactor) * toFactor
 }
 
+// ConvertTemperature convert temperature from a unit to another unit
 func ConvertTemperature(temp float64, unitFrom string, unitTo string) float64 {
 	// Conversion formulas between Celsius, Kelvin, and Fahrenheit
 	switch strings.ToLower(unitFrom) {

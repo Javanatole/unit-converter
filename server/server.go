@@ -29,6 +29,7 @@ func InitHttpRoutes() {
 			http.Error(w, "Invalid length value", http.StatusBadRequest)
 			return
 		}
+		// get unit from and to
 		unitFrom := r.FormValue("unit_from")
 		unitTo := r.FormValue("unit_to")
 
